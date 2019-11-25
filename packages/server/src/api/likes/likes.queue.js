@@ -20,7 +20,7 @@ likesQueue.process(async ({ data }, done) => {
     page_url: data.page_url
   });
 
-  if (!likes.creds.find(x => x._id == creds._id)) {
+  if (!likes.creds || !likes.creds.find(x => x._id == creds._id)) {
     likes.creds.push(creds);
 
     likes.count++;

@@ -6,10 +6,10 @@ module.exports = async ({ creds, page_url }) => {
   console.log("browser active");
 
   const browser = await puppeteer.launch({
-    headless: false,
+    headless: true,
     args: [
-      // "--no-sandbox"
-      // "--proxy-server=127.0.0.1:9876"
+      "--no-sandbox"
+      //  "--proxy-server=https://167.71.181.73:8080"
     ]
   });
 
