@@ -1,42 +1,102 @@
 <template>
-  <div class="uk-container">
-    <vk-grid class="home">
-      <div class="uk-width-expand@m">
-        <vk-card>
-          <vk-card-title>Add credentials</vk-card-title>
+  <div class="uk-section">
+    <div class="uk-container">
+      <vk-grid class="home">
+        <div class="uk-width-expand@m">
+          <Card title="Like processing">
+            <div class="uk-margin">
+              <input
+                class="uk-input uk-form-width-large"
+                v-model="pageUrl"
+                type="text"
+                placeholder="Post url"
+              />
+            </div>
+            <div class="uk-margin">
+              <input
+                class="uk-input uk-form-width-large"
+                v-model="total"
+                type="text"
+                placeholder="Total needed"
+              />
+            </div>
+            <vk-button @click="processLikes">Process</vk-button>
+          </Card>
+        </div>
+      </vk-grid>
+    </div>
+    <div class="uk-container">
+      <vk-grid class="likes-table">
+        <div class="uk-width-expand@m">
+          <Card title="List likes">
+            <table class="uk-table uk-table-striped">
+              <thead>
+                <tr>
+                  <th>id</th>
+                  <th>url</th>
+                  <th>count</th>
+                  <th>total</th>
+                  <th>created</th>
+                </tr>
+              </thead>
 
-          <div class="uk-margin">
-            <input class="uk-input uk-form-width-large" type="text" placeholder="Email" />
-          </div>
-          <div class="uk-margin">
-            <input class="uk-input uk-form-width-large" type="text" placeholder="Password" />
-          </div>
-          <vk-button>Add</vk-button>
-        </vk-card>
-      </div>
-      <div class="uk-width-expand@m">
-        <vk-card>
-          <vk-card-title>Like processing</vk-card-title>
-          <div class="uk-margin">
-            <input class="uk-input uk-form-width-large" type="text" placeholder="Post url" />
-          </div>
-          <vk-button>Process</vk-button>
-        </vk-card>
-      </div>
-    </vk-grid>
+              <tbody>
+                <tr v-for="(data, idx) in likes" :key="idx">
+                  <td>
+                    <router-link :to="`/likes/${data._id}`">{{data._id}}</router-link>
+                  </td>
+                  <td>
+                    <a :href="data.page_url">{{data.page_url}}</a>
+                  </td>
+                  <td>{{data.creds.length}}</td>
+                  <td>{{data.total}}</td>
+                  <td>{{data.createdAt}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </Card>
+        </div>
+      </vk-grid>
+    </div>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
+import { addLikes, getAllLikes } from "@/api-client";
+import Card from "@/components/Card.vue";
+
 export default {
   name: "home",
-  components: {}
+  components: {
+    Card
+  },
+  data() {
+    return {
+      pageUrl: "",
+      likes: [],
+      total: null
+    };
+  },
+  methods: {
+    async processLikes() {
+      await addLikes(this.pageUrl, this.total);
+    },
+    async allLikes() {
+      const { items, total } = await getAllLikes();
+      this.likes = items;
+    }
+  },
+  created() {
+    this.allLikes();
+  }
 };
 </script>
 
 <style scoped>
 .home {
   padding-top: 60px;
+}
+.likes-table {
+  margin-top: 50px;
 }
 </style>

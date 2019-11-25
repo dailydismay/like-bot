@@ -5,18 +5,27 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node src/"
+    "start": "node src/",
+    "dev": "nodemon src/",
+    "db": "nodemon db.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@koa/cors": "^2.2.3",
     "bull": "^3.11.0",
     "dotenv": "^8.2.0",
+    "joi": "^14.3.1",
     "koa": "^2.11.0",
     "koa-bodyparser": "^4.2.1",
     "koa-router": "^7.4.0",
     "mongoose": "^5.7.8",
+    "pm2": "^4.1.2",
     "puppeteer": "^2.0.0"
+  },
+  "devDependencies": {
+    "faker": "^4.1.0",
+    "nodemon": "^1.19.4"
   }
 }
