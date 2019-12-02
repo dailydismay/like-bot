@@ -15,6 +15,7 @@ module.exports = new Router({
         .find()
         .skip(page * perPage)
         .limit(perPage)
+        .sort("-createdAt")
         .exec(),
       credsModel.count()
     ]);

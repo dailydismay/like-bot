@@ -1,11 +1,15 @@
 <template>
-  <div class="uk-section">
+  <div class="uk-section uk-background-muted">
     <div class="uk-container">
       <vk-grid>
         <div class="uk-width-expand@m">
           <Card title="Add creds">
             <div class="uk-margin">
-              <input class="uk-input uk-form-width-large" v-model="creds.email" placeholder="Email" />
+              <input
+                class="uk-input uk-form-width-large"
+                v-model="creds.email"
+                placeholder="Email"
+              />
             </div>
             <div class="uk-margin">
               <input
@@ -19,35 +23,43 @@
             </div>
           </Card>
         </div>
-        <div class="uk-width-expand@m">
-          <Card title="List creds">
-            <table class="uk-table uk-table-striped">
-              <thead>
-                <tr>
-                  <th>id</th>
-                  <th>email</th>
-                  <th>password</th>
-                </tr>
-              </thead>
-              <tfoot>
-                <tr>
-                  <th>total: {{ total }}</th>
-                </tr>
-              </tfoot>
-
-              <tbody>
-                <tr v-for="(data, idx) in items" :key="idx">
-                  <td>
-                    <router-link :to="`/creds/${data._id}`">{{data._id}}</router-link>
-                  </td>
-                  <td>{{data.email}}</td>
-                  <td>{{data.password}}</td>
-                </tr>
-              </tbody>
-            </table>
-          </Card>
-        </div>
       </vk-grid>
+      <div class="uk-container list-creds">
+        <vk-grid>
+          <div class="uk-width-expand@m">
+            <Card title="List creds">
+              <table class="uk-table uk-table-striped">
+                <thead>
+                  <tr>
+                    <th>id</th>
+                    <th>email</th>
+                    <th>password</th>
+                    <th>created</th>
+                  </tr>
+                </thead>
+                <tfoot>
+                  <tr>
+                    <th>total: {{ total }}</th>
+                  </tr>
+                </tfoot>
+
+                <tbody>
+                  <tr v-for="(data, idx) in items" :key="idx">
+                    <td>
+                      <router-link :to="`/creds/${data._id}`">{{
+                        data._id
+                      }}</router-link>
+                    </td>
+                    <td>{{ data.email }}</td>
+                    <td>{{ data.password }}</td>
+                    <td>{{ data.createdAt | toDate }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </Card>
+          </div>
+        </vk-grid>
+      </div>
     </div>
   </div>
 </template>
@@ -92,5 +104,8 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+.list-creds {
+  margin-top: 50px;
 }
 </style>

@@ -1,19 +1,25 @@
 <template>
-  <div class="uk-section">
+  <div class="uk-section uk-background-muted">
     <div class="uk-container">
       <vk-grid v-if="like" class="uk-flex-center">
-        <div v-if="!isEditModeOn">
+        <div class="uk-width-expand@m">
           <Card :title="`Post : ${like._id}`">
             <div class="uk-margin uk-text-left">
               <h4>
                 Post url:
-                <a :href="like.page_url">{{like.page_url}}</a>
+                <a :href="like.page_url">{{ like.page_url }}</a>
               </h4>
             </div>
             <div class="uk-margin uk-text-left">
               <div>
-                created:
-                <h4>{{ like.createdAt }}</h4>
+                Created:
+                <h4>{{ like.createdAt | toDate }}</h4>
+              </div>
+            </div>
+            <div class="uk-margin uk-text-left">
+              <div>
+                Last liked:
+                <h4>{{ like.updatedAt | toDateFromNow }}</h4>
               </div>
             </div>
             <div class="uk-margin uk-text-left">
@@ -24,14 +30,16 @@
             </div>
             <div class="uk-margin uk-text-left">
               <div>
-                Total:
-                <h4>{{ like.total }}</h4>
+                Delay:
+                <h4>{{ like.delay }} Min</h4>
               </div>
             </div>
             <div class="uk-margin uk-text-left">
               <div>
                 Status:
-                <h4>{{ like.total === like.count ? 'Done' : 'In progress' }}</h4>
+                <h4>
+                  {{ like.total === like.count ? "Done" : "In progress" }}
+                </h4>
               </div>
             </div>
             <vk-buttons>
@@ -49,16 +57,20 @@
                   <th>id</th>
                   <th>email</th>
                   <th>password</th>
+                  <th>created</th>
                 </tr>
               </thead>
 
               <tbody>
                 <tr v-for="(data, idx) in like.creds" :key="idx">
                   <td>
-                    <router-link :to="`/creds/${data._id}`">{{data._id}}</router-link>
+                    <router-link :to="`/creds/${data._id}`">{{
+                      data._id
+                    }}</router-link>
                   </td>
-                  <td>{{data.email}}</td>
-                  <td>{{data.password}}</td>
+                  <td>{{ data.email }}</td>
+                  <td>{{ data.password }}</td>
+                  <td>{{ data.createdAt | toDate }}</td>
                 </tr>
               </tbody>
             </table>
@@ -68,7 +80,6 @@
     </div>
   </div>
 </template>
-
 
 <script>
 import { getLikes, patchCreds, deleteLikes } from "@/api-client";

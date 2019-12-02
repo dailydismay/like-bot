@@ -1,7 +1,10 @@
 const Router = require("koa-router");
+const validate = require("../../core/middleware/validation");
+const schema = require("./likes.dto");
+
 const credsModel = require("../creds/creds.model");
 const likesModel = require("./likes.model");
-const queue = require("./likes.queue");
+const { queue } = require("./likes.queue");
 
 module.exports = new Router({
   prefix: "/likes"
@@ -14,7 +17,7 @@ module.exports = new Router({
     ctx.body = data;
   })
   .get("/", async ctx => {
-    const items = await likesModel.find();
+    const items = await likesModel.find().sort("-createdAt");
 
     const total = await likesModel.count();
 
@@ -28,29 +31,28 @@ module.exports = new Router({
 
     ctx.status = 204;
   })
-  .post("/", async ctx => {
-    const { page_url, total } = ctx.request.body;
+  .post("/", validate(schema, "request.body"), async ctx => {
+    const { page_url, delay } = ctx.request.body;
 
-    await likesModel.create({
+    const like = await likesModel.create({
       page_url,
-      total
+      delay
     });
 
     const allCreds = await credsModel.find();
 
-    allCreds.forEach(creds => {
-      queue.add({
-        creds,
-        page_url
-      });
+    allCreds.forEach((creds, idx) => {
+      queue.add(
+        {
+          creds,
+          page_url
+        },
+        {
+          delay: delay * 3600 * ++idx,
+          attempts: 2
+        }
+      );
     });
 
-    const message = `Likes for ${page_url} are being processed`;
-
-    console.log(message);
-
-    ctx.body = {
-      success: true,
-      message
-    };
+    ctx.body = like;
   });

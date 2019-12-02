@@ -1,5 +1,5 @@
 <template>
-  <div class="uk-section">
+  <div class="uk-section uk-background-muted">
     <div class="uk-container">
       <vk-grid class="home">
         <div class="uk-width-expand@m">
@@ -15,9 +15,9 @@
             <div class="uk-margin">
               <input
                 class="uk-input uk-form-width-large"
-                v-model="total"
-                type="text"
-                placeholder="Total needed"
+                v-model="delay"
+                type="number"
+                placeholder="Delay (mins)"
               />
             </div>
             <vk-button @click="processLikes">Process</vk-button>
@@ -35,7 +35,7 @@
                   <th>id</th>
                   <th>url</th>
                   <th>count</th>
-                  <th>total</th>
+                  <th>delay</th>
                   <th>created</th>
                 </tr>
               </thead>
@@ -43,14 +43,16 @@
               <tbody>
                 <tr v-for="(data, idx) in likes" :key="idx">
                   <td>
-                    <router-link :to="`/likes/${data._id}`">{{data._id}}</router-link>
+                    <router-link :to="`/likes/${data._id}`">{{
+                      data._id
+                    }}</router-link>
                   </td>
                   <td>
-                    <a :href="data.page_url">{{data.page_url}}</a>
+                    <a :href="data.page_url">{{ data.page_url }}</a>
                   </td>
-                  <td>{{data.creds.length}}</td>
-                  <td>{{data.total}}</td>
-                  <td>{{data.createdAt}}</td>
+                  <td>{{ data.creds.length }}</td>
+                  <td>{{ data.delay }} Mins</td>
+                  <td>{{ data.createdAt | toDate }}</td>
                 </tr>
               </tbody>
             </table>
@@ -74,12 +76,13 @@ export default {
     return {
       pageUrl: "",
       likes: [],
-      total: null
+      delay: 0
     };
   },
   methods: {
     async processLikes() {
-      await addLikes(this.pageUrl, this.total);
+      const likes = await addLikes(this.pageUrl, this.delay);
+      this.likes = [likes, ...this.likes];
     },
     async allLikes() {
       const { items, total } = await getAllLikes();

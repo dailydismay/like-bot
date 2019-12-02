@@ -1,14 +1,19 @@
 import axios from "axios";
 
+// export const baseURL = "https://api-like-rate.herokuapp.com";
+export const baseURL = "http://localhost:3000";
+
 const client = axios.create({
-  baseURL: "http://localhost:3000"
+  baseURL
 });
 
-export const addLikes = async (page_url, total) => {
-  await client.post(`/likes`, {
+export const addLikes = async (page_url, delay) => {
+  const { data } = await client.post(`/likes`, {
     page_url,
-    total
+    delay
   });
+
+  return data;
 };
 
 export const createCreds = async body => {
@@ -46,4 +51,15 @@ export const getLikes = async id => {
 
 export const deleteLikes = async id => {
   await client.delete(`/likes/${id}`);
+};
+
+export const getCurrentProxy = async () => {
+  const { data } = await client.get("/proxy");
+  return data.currentProxy;
+};
+
+export const setCurrentProxy = async proxy => {
+  const data = await client.post(`/proxy?proxy=${proxy}`);
+
+  return data.currentProxy;
 };

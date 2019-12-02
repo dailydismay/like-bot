@@ -2,6 +2,8 @@ module.exports = async (ctx, next) => {
   try {
     await next();
   } catch (error) {
+    console.log(error);
+
     const status = error.code || 500;
 
     const message = status === 500 ? "Internal error" : error.message;

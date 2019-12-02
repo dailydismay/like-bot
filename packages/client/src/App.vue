@@ -1,16 +1,40 @@
 <template>
   <div id="app">
     <Header />
+    <vk-notification position="top-left" :messages.sync="topLeft">
+      <div slot-scope="{ message }">
+        <vk-icon icon="check"></vk-icon>{{ message }}
+      </div>
+    </vk-notification>
     <router-view />
   </div>
 </template>
 
 <script>
+import socket from "socket.io-client";
+import { baseURL } from "@/api-client";
 import Header from "@/components/Header.vue";
 
 export default {
   components: {
     Header
+  },
+  data() {
+    return {
+      topLeft: [],
+      io: null
+    };
+  },
+  created() {
+    this.io = socket(baseURL);
+
+    this.io.on("CREDS_USED", creds => {
+      this.topLeft = [
+        ...this.topLeft,
+        `Account ${creds.email} liked ${creds.page_url}`
+      ];
+      this.lastMsg = creds;
+    });
   }
 };
 </script>

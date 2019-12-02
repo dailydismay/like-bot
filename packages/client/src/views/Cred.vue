@@ -1,16 +1,18 @@
 <template>
-  <div class="uk-section">
+  <div class="uk-section uk-background-muted">
     <div class="uk-container">
       <vk-grid v-if="creds" class="uk-flex-center">
         <div v-if="!isEditModeOn">
           <Card :title="`Creds: ${creds._id}`">
             <div class="uk-margin uk-text-left">
-              <h4>EMAIL: {{creds.email}}</h4>
+              <h4>EMAIL: {{ creds.email }}</h4>
             </div>
             <div class="uk-margin uk-text-left">
               <h4>PASSWORD: {{ creds.password }}</h4>
             </div>
-
+            <div class="uk-margin uk-text-left">
+              <h4>CREATED: {{ creds.createdAt | toDate }}</h4>
+            </div>
             <vk-buttons>
               <vk-button @click="toggleEditMode">Edit</vk-button>
               <vk-button @click="deleteCreds">Delete</vk-button>
@@ -46,7 +48,6 @@
     </div>
   </div>
 </template>
-
 
 <script>
 import { getCreds, patchCreds, deleteCreds } from "@/api-client";

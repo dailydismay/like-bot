@@ -4,33 +4,33 @@ const likesModel = require("./likes.model");
 const likesService = require("./likes.service");
 
 const likesQueue = new Queue("likes queue", {
-  // limiter: {
-  //   // duration: 30 * 60 * 1000,
-  //   max: 1
-  // },
   redis: process.env.REDIS_URI
 });
 
-likesQueue.process(async ({ data }, done) => {
-  const creds = await credsModel.findOne({
-    ...data.creds
+module.exports = io => {
+  likesQueue.process(async ({ data }, done) => {
+    const creds = await credsModel.findOne({
+      ...data.creds
+    });
+
+    const likes = await likesModel.findOne({
+      page_url: data.page_url
+    });
+
+    if (likes && (!likes.creds || !likes.creds.find(x => x._id == creds._id))) {
+      likes.creds.push(creds);
+
+      likes.count++;
+
+      await likes.save();
+
+      await likesService(data);
+
+      io.emit("CREDS_USED", { ...data.creds, page_url: data.page_url });
+    }
+
+    return done();
   });
+};
 
-  const likes = await likesModel.findOne({
-    page_url: data.page_url
-  });
-
-  if (!likes.creds || !likes.creds.find(x => x._id == creds._id)) {
-    likes.creds.push(creds);
-
-    likes.count++;
-
-    await likes.save();
-
-    await likesService(data);
-  }
-
-  return done();
-});
-
-module.exports = likesQueue;
+module.exports.queue = likesQueue;
