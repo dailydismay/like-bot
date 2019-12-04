@@ -10,9 +10,6 @@
             <li>
               <router-link to="/creds">Creds</router-link>
             </li>
-            <li>
-              <router-link to="/proxy">Proxy</router-link>
-            </li>
           </ul>
         </div>
       </nav>

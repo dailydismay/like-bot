@@ -1,51 +1,38 @@
 const puppeteer = require("puppeteer");
 const randomagent = require("random-useragent");
-const proxyChain = require("proxy-chain");
-const exec = require("child_process").exec;
-const proxyModel = require("../proxy/proxy.model");
+const wait = (t = 5) => new Promise(r => setTimeout(r, t * 1000));
 
-const wait = () => new Promise(r => setTimeout(r, 5000));
+const username = process.env.PROXY_USER;
+const password = process.env.PROXY_PASSWORD;
 
 module.exports = async ({ creds, page_url }) => {
-  console.log("browser active");
-
-  const [oldProxyUrl] = await proxyModel.find();
-
-  let newProxyUrl = oldProxyUrl.url;
-
-  try {
-    newProxyUrl = await proxyChain.anonymizeProxy(newProxyUrl);
-  } catch (error) {}
+  const proxyUrl = `https://${username}:${password}@x.botproxy.net:8443`;
 
   const browser = await puppeteer.launch({
     headless: true,
     ignoreHTTPSErrors: true,
-    defaultViewport: null,
-    slowMo: 10,
-    args: [`--proxy-server=${newProxyUrl}`, "--no-sandbox"]
+    args: [`--proxy-server=${proxyUrl}`, "--no-sandbox"]
   });
   const page = await browser.newPage();
 
-  page.on("response", response => {
-    if (response.ok() === false) {
-      exec(
-        "(echo authenticate '\"\"'; echo signal newnym; echo quit) | nc localhost 9051",
-        () => console.log("Success: The IP Address has been changed.")
-      );
-    } else {
-      console.log(
-        "Success: The Page Response was successful (no need to change the IP Address)."
-      );
-    }
+  await page.authenticate({
+    username,
+    password
+  });
+
+  await page.setExtraHTTPHeaders({
+    "X-BOTPROXY-COUNTRY": "US",
+    "X-BOTPROXY-SESSION": "123"
   });
 
   await page.setUserAgent(randomagent.getRandom());
 
   await page.goto("https://a.growthhackers.com/login", {
-    waitUntil: "networkidle2",
+    waitUntil: "networkidle0",
     timeout: 3000000
   });
-  await wait();
+
+  await wait(10);
 
   await page.waitForSelector("#user_email");
 
@@ -55,7 +42,7 @@ module.exports = async ({ creds, page_url }) => {
   await page.click(".pull-right").catch(() => {});
 
   await page.goto(page_url, {
-    waitUntil: "networkidle2",
+    waitUntil: "networkidle0",
     timeout: 3000000
   });
 
@@ -70,10 +57,6 @@ module.exports = async ({ creds, page_url }) => {
 
     btn.click();
   });
-
-  console.log(`Like added for ${creds.email}`);
-
-  await page.screenshot();
 
   await browser.close();
 };

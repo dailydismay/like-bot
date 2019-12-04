@@ -5,11 +5,7 @@
         <div class="uk-width-expand@m">
           <Card title="Add creds">
             <div class="uk-margin">
-              <input
-                class="uk-input uk-form-width-large"
-                v-model="creds.email"
-                placeholder="Email"
-              />
+              <input class="uk-input uk-form-width-large" v-model="creds.email" placeholder="Email" />
             </div>
             <div class="uk-margin">
               <input
@@ -37,18 +33,14 @@
                     <th>created</th>
                   </tr>
                 </thead>
-                <tfoot>
-                  <tr>
-                    <th>total: {{ total }}</th>
-                  </tr>
-                </tfoot>
-
                 <tbody>
                   <tr v-for="(data, idx) in items" :key="idx">
                     <td>
-                      <router-link :to="`/creds/${data._id}`">{{
+                      <router-link :to="`/creds/${data._id}`">
+                        {{
                         data._id
-                      }}</router-link>
+                        }}
+                      </router-link>
                     </td>
                     <td>{{ data.email }}</td>
                     <td>{{ data.password }}</td>

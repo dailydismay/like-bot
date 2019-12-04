@@ -43,14 +43,16 @@
               <tbody>
                 <tr v-for="(data, idx) in likes" :key="idx">
                   <td>
-                    <router-link :to="`/likes/${data._id}`">{{
+                    <router-link :to="`/likes/${data._id}`">
+                      {{
                       data._id
-                    }}</router-link>
+                      }}
+                    </router-link>
                   </td>
                   <td>
                     <a :href="data.page_url">{{ data.page_url }}</a>
                   </td>
-                  <td>{{ data.creds.length }}</td>
+                  <td>{{ data.count }}</td>
                   <td>{{ data.delay }} Mins</td>
                   <td>{{ data.createdAt | toDate }}</td>
                 </tr>
@@ -64,8 +66,9 @@
 </template>
 
 <script>
-import { addLikes, getAllLikes } from "@/api-client";
 import Card from "@/components/Card.vue";
+import { addLikes, getAllLikes } from "@/api-client";
+import { eventBus } from "@/main.js";
 
 export default {
   name: "home",
@@ -91,6 +94,17 @@ export default {
   },
   created() {
     this.allLikes();
+
+    if (eventBus) {
+      eventBus.$on("CREDS_USED", creds => {
+        this.likes = this.likes.map(like => {
+          if ((like.page_url = creds.page_url)) {
+            like.count = like.count + 1;
+          }
+          return like;
+        });
+      });
+    }
   }
 };
 </script>

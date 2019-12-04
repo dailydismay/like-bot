@@ -25,7 +25,7 @@
             <div class="uk-margin uk-text-left">
               <div>
                 Count:
-                <h4>{{ like.creds.length }}</h4>
+                <h4>{{ like.count }}</h4>
               </div>
             </div>
             <div class="uk-margin uk-text-left">
@@ -37,9 +37,7 @@
             <div class="uk-margin uk-text-left">
               <div>
                 Status:
-                <h4>
-                  {{ like.total === like.count ? "Done" : "In progress" }}
-                </h4>
+                <h4>{{ like.total === like.count ? "Done" : "In progress" }}</h4>
               </div>
             </div>
             <vk-buttons>
@@ -64,9 +62,11 @@
               <tbody>
                 <tr v-for="(data, idx) in like.creds" :key="idx">
                   <td>
-                    <router-link :to="`/creds/${data._id}`">{{
+                    <router-link :to="`/creds/${data._id}`">
+                      {{
                       data._id
-                    }}</router-link>
+                      }}
+                    </router-link>
                   </td>
                   <td>{{ data.email }}</td>
                   <td>{{ data.password }}</td>
@@ -82,8 +82,9 @@
 </template>
 
 <script>
-import { getLikes, patchCreds, deleteLikes } from "@/api-client";
 import Card from "@/components/Card.vue";
+import { getLikes, patchCreds, deleteLikes } from "@/api-client";
+import { eventBus } from "@/main.js";
 
 export default {
   components: {
@@ -109,6 +110,14 @@ export default {
   async mounted() {
     const data = await getLikes(this.$route.params.id);
     this.like = data;
+
+    if (eventBus) {
+      eventBus.$on("CREDS_USED", creds => {
+        if (this.like.page_url === creds.page_url) {
+          this.like.count++;
+        }
+      });
+    }
   }
 };
 </script>

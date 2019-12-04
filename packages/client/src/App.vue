@@ -3,7 +3,8 @@
     <Header />
     <vk-notification position="top-left" :messages.sync="topLeft">
       <div slot-scope="{ message }">
-        <vk-icon icon="check"></vk-icon>{{ message }}
+        <vk-icon icon="check"></vk-icon>
+        {{ message }}
       </div>
     </vk-notification>
     <router-view />
@@ -12,8 +13,9 @@
 
 <script>
 import socket from "socket.io-client";
-import { baseURL } from "@/api-client";
 import Header from "@/components/Header.vue";
+import { baseURL } from "@/api-client";
+import { eventBus } from "@/main";
 
 export default {
   components: {
@@ -33,7 +35,10 @@ export default {
         ...this.topLeft,
         `Account ${creds.email} liked ${creds.page_url}`
       ];
+
       this.lastMsg = creds;
+
+      eventBus.$emit("CREDS_USED", creds);
     });
   }
 };
