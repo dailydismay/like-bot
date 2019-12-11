@@ -32,8 +32,6 @@ module.exports = async ({ creds, page_url }) => {
     timeout: 3000000
   });
 
-  await wait(10);
-
   await page.waitForSelector("#user_email");
 
   await page.type("#user_email", creds.email);
@@ -57,6 +55,8 @@ module.exports = async ({ creds, page_url }) => {
 
     btn.click();
   });
+
+  await wait(3);
 
   await browser.close();
 };
